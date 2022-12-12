@@ -1,6 +1,5 @@
 import { connection } from "../database/database.js"
 
-
 export async function validateRentals(req,res,next){
     const {customerId, gameId, daysRented} = req.body
     let gameExist;
@@ -17,7 +16,6 @@ export async function validateRentals(req,res,next){
         if(!customerExist.rows[0] || !gameExist.rows[0]){
             return res.sendStatus(400)
         }
-     
 
         if(gameExist){
             const isAvailable = (await connection.query('SELECT * FROM rentals WHERE rentals."gameId"=$1',[gameId])).rows
@@ -32,11 +30,7 @@ export async function validateRentals(req,res,next){
             if(gameExist.rows[0].stockTotal === count){
                 return res.sendStatus(400)
             }
-
-       
         }
-
-  
     } catch(error){
         console.log(error)
     }
@@ -44,4 +38,32 @@ export async function validateRentals(req,res,next){
     req.game = gameExist.rows[0]
 
    next()
+}
+
+
+export async function validateReturn(req,res,next){
+    const rentalId = req.params.id
+    let rentalExist
+
+    if(!rentalId){
+        return res.sendStatus(400)
+    }
+
+    try{
+        rentalExist = await (await connection.query("SELECT * FROM rentals WHERE id=$1",[rentalId])).rows[0]
+
+        if(!rentalExist){
+            return res.sendStatus(400)
+        }
+
+        if(rentalExist.returnDate !== null){
+            return res.sendStatus(400)
+        }
+    } catch(error){
+        console.log(error)
+    }
+
+    req.rental = rentalExist
+
+    next()
 }

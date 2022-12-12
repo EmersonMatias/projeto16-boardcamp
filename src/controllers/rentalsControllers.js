@@ -7,7 +7,7 @@ dayjs.extend(customParseFormat)
 
 export async function registerRental(req, res) {
     const { customerId, gameId, daysRented } = req.body
-    const date = (new Date()).toLocaleDateString()
+    const date = "2022-12-06"
     const originalPrice = req.game.pricePerDay * daysRented
     console.log(originalPrice)
    
@@ -70,4 +70,28 @@ export async function getRentals(req, res) {
     } catch (error) {
         console.log(error)
     }
+}
+
+export async function finishRental(req,res){
+    const rentalId = req.params.id
+    const rental = req.rental
+    const now = dayjs()
+    let fee = 0;
+    const borrowedDays = now.diff(rental.rentDate, 'days')
+
+    if(borrowedDays > rental.daysRented){
+        fee = (borrowedDays- rental.daysRented)*(rental.originalPrice/rental.daysRented)
+    }
+
+    try{
+        await connection.query('UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3',[now, fee, rentalId])
+        res.sendStatus(200)
+    } catch(error){
+        console.log(error)
+    }
+
+ 
+    console.log(fee)
+   console.log( borrowedDays-rental.daysRented)
+    
 }
