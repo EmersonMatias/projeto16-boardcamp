@@ -36,3 +36,21 @@ export async function validateCustomers(req,res,next){
 
     next()
 }
+
+export async function validateId(req,res,next){
+    const customerId = req.params.id
+
+    try{
+        const idExist = await connection.query("SELECT * FROM customers WHERE id=$1", [customerId])
+
+        if(!idExist.rows[0]){
+            return res.sendStatus(400)
+        }
+
+    } catch(error){
+        console.log(error)
+    }
+
+
+    next()
+}
