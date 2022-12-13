@@ -15,4 +15,6 @@ app.use(gamesRouters)
 app.use(customersRouters)
 app.use(rentalsRouters)
 
-app.listen(4001, () => {console.log("Server Running")})
+const port = process.env.PORT || 4000 
+
+app.listen(port, () => {console.log("Server Running")})

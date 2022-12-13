@@ -12,7 +12,7 @@ export async function validateCategory(req,res,next){
         [categoryName])
 
         if(categoryExist.rows[0]?.name){
-            return res.status(409).send("Categoria já existe.")
+            return res.sendStatus(409)
         }
 
     } catch(error){

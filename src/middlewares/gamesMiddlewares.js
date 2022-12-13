@@ -4,11 +4,11 @@ export async function validateGame(req, res, next) {
     const { name, image, stockTotal,categoryId, pricePerDay } = req.body
 
     if (!name || !categoryId || !image || !stockTotal || !pricePerDay) {
-        return res.status(400).send("Campos vazios")
+        return res.sendStatus(400)
     }
  
     if (stockTotal <= 0 || pricePerDay <= 0) {
-        return res.status(400).send("Preço e estoque devem ser maiores que zero")
+        return res.sendStatus(400)
     }
  
     try {
@@ -16,13 +16,13 @@ export async function validateGame(req, res, next) {
         [categoryId])).rows[0]?.id
 
         if(!categoryExist){
-            return res.status(400).send("Categoria não existe")
+            return res.sendStatus(400)
         }
 
         const gameExist = (await connection.query("SELECT (name) FROM games WHERE name=($1)", [name])).rows[0]
         
         if(gameExist){
-            return res.status(409).send("Jogo já cadastrado")
+            return res.sendStatus(409)
         }
           
     } catch (error) {

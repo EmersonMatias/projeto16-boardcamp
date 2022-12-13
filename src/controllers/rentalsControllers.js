@@ -7,7 +7,7 @@ dayjs.extend(customParseFormat)
 
 export async function registerRental(req, res) {
     const { customerId, gameId, daysRented } = req.body
-    const date = "2022-12-06"
+    const date = dayjs()
     const originalPrice = req.game.pricePerDay * daysRented
     console.log(originalPrice)
    
@@ -94,4 +94,16 @@ export async function finishRental(req,res){
     console.log(fee)
    console.log( borrowedDays-rental.daysRented)
     
+}
+
+
+export async function deleteRental(req,res){
+    const rentalId = req.params.id
+
+    try{
+        await connection.query("DELETE FROM rentals WHERE id=$1",[rentalId])
+        res.sendStatus(200)
+    } catch(error){
+        console.log(error)
+    }
 }

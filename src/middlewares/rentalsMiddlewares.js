@@ -6,7 +6,7 @@ export async function validateRentals(req,res,next){
     const validateData = !customerId  || !gameId  || !daysRented  || daysRented <= 0 || isNaN(daysRented) || isNaN(customerId) || isNaN(gameId)
 
     if(validateData){
-        return res.send(400)
+        return res.sendStatus(400)
     }
 
     try{
@@ -40,7 +40,6 @@ export async function validateRentals(req,res,next){
    next()
 }
 
-
 export async function validateReturn(req,res,next){
     const rentalId = req.params.id
     let rentalExist
@@ -64,6 +63,32 @@ export async function validateReturn(req,res,next){
     }
 
     req.rental = rentalExist
+
+    next()
+}
+
+export async function validateDelete(req,res,next){
+    const rentalId = req.params.id
+ 
+
+    if(isNaN(rentalId)){
+        return res.sendStatus(400)
+    }
+
+    try{
+        const rental = (await connection.query("SELECT * FROM rentals WHERE id=$1", [rentalId])).rows[0]
+        
+        if(!rental){
+            return res.sendStatus(404)
+        }
+        
+        if(!rental.returnDate){
+            return res.sendStatus(400)
+        }
+
+    } catch(error){
+        console.log(error)
+    }
 
     next()
 }
